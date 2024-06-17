@@ -9,9 +9,16 @@ const methodOverride = require('method-override');
 const Campground = require('./models/campground');
 const Review = require('./models/review');
 const flash = require('connect-flash');
-const campgrounds = require('./routes/campgrounds')
-const reviews = require('./routes/reviews')
-const session = require('express-session')
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models//user');
+
+const campgroundRoutes = require('./routes/campgrounds')
+const reviewRoutes = require('./routes/reviews');
+const userRoutes = require('./routes/users.js')
+
+
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp');
 
@@ -33,7 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret',
     resave: false,
-    saveUnitialized: true,
+    saveUninitialized: true,
     cookie: {
         httpsOnly: true,
         expires: Date.now()+ 1000*60*60*24*7,
@@ -42,6 +49,12 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig))
 app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 
@@ -65,13 +78,17 @@ const validateReview = (req, res, next) => {
 }
 
 app.use((req, res, next) => {
-    res.locals.success.req.flash('success');
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+app.use('/', userRoutes)
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes)
+
+
 
 app.get('/', (req, res) => {
     res.render('home')
