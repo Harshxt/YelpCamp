@@ -13,7 +13,7 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
-const MongoStore = require('connect-mongo')
+const MongoStore = require('connect-mongo')(session)
 
 
 
@@ -156,9 +156,9 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err })
 })
 
-const port = process.env.PORT
+const port = process.env.PORT || '3000'
 
-app.listen(port, () => {
+app.listen(3000, () => {
     console.log(`Serving on port ${port}`);
 })
 
