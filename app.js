@@ -13,7 +13,7 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
-const MongoStore = require('connect-mongo')(session)
+const MongoStore = require('connect-mongo');
 
 
 
@@ -93,10 +93,12 @@ app.use(
 
 const secret = process.env.SECRET
 
-const store = new MongoStore({
-    url: dbUrl,
-    secret: secret,
-    touchAfter: 24 * 3600 * 14
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: secret
+    }
 });
 
 store.on('error', function(e){
