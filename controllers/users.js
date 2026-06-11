@@ -15,7 +15,10 @@ module.exports.register =async (req, res, next) => {
         req.flash('success', 'Welcome to Yelp Camp');
         res.redirect('/campgrounds');
     } catch (e) {
-
+        if (e.code === 11000 && e.message.includes('email')) {
+            req.flash('error', 'A user with that email is already registered.');
+            return res.redirect('/register');
+        }
         req.flash('error', e.message);
         res.redirect('/register')
     }
