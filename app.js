@@ -67,6 +67,8 @@ const connectSrcUrls = [
     "https://a.tiles.mapbox.com/",
     "https://b.tiles.mapbox.com/",
     "https://events.mapbox.com/",
+    "https://cdn.jsdelivr.net/",          
+    "https://stackpath.bootstrapcdn.com/" 
 ];
 const fontSrcUrls = [];
 
